@@ -89,19 +89,35 @@ const newProducts=[
     id:7,
     title:"Dragon ball",
     category: "truyen tranh",
-    price: 80
+    price: 101
   },
+  {
+    id:8,
+    title:"Dau tu chung khoan",
+    category: "kinh te",
+    price: 99
+  },
+  {
+    id:9,
+    title:"Dau tu bat dong san",
+    category: "kinh te",
+    price: 1
+  },
+  {
+    id:10,
+    title:"Phap luat",
+    category: "Chinh tri",
+    price: 66
+  }
   
 ];
 
 const listObj=JSON.parse(listJson);
 const list= listObj.products;
-
-
 const template=list[0];
 
 
-const result=document.getElementById('demo');
+
 
 
 newProducts.forEach((item,index)=>{
@@ -111,21 +127,108 @@ newProducts.forEach((item,index)=>{
   }
   if(Array.isArray(list)){
     list.push(newItem)
-    
   }
 });
+    
 
-function searchProduct(arr, prop, value){
-  const result=[];
-  arr.forEach(item=>{
-    if(item[prop]===value){
-      result.push(item);
-    }
-  });
-  return result;
+function listAllCategory(arr){
+  let text='';
+  if(Array.isArray(arr)){
+    arr.forEach(item=>{
+      if(!text.includes(item.category))
+        text+=item.category+'\n';
+    })
+  }
+  return text.length>0 ? text: "Category empty";
 }
-console.log(searchProduct(list,"title","Dragon ball"));
+// tìm kiếm,lọc theo category
+function searchProductByCategory(arr,category){
+  const result=[];
+  let text='';
+  if(Array.isArray(arr)){
+    arr.forEach(item=>{
+      if(item.category === category){
+        result.push(item);
+      }
+    });
+    result.forEach(item=>{
+      for( let [key,value] of Object.entries(item)){
+        text+=key+ ':'+ value+ '\n';
+      }
+      text+='\n ---------------\n';
+    });
+  }
+  return result.length>0? text: 'No product match category.';
+}
 
+//lọc các sản phẩm có giá dưới 100
+function searchProductLessThan(arr,price){
+  const result=[];
+  let text='';
+  if(Array.isArray(arr)){
+    arr.forEach(item=>{
+      if(item.price <= price){
+        result.push(item);
+      }
+    });
+    result.forEach(item=>{
+      for( let [key,value] of Object.entries(item)){
+        text+=key+ ':'+ value+ '\n';
+      }
+      text+='\n ---------------\n';
+    });
+  }
+  return result.length>0? text: 'No product has price less than '+price +'.';
+}
+//tính tổng tiền của các sản phẩm có giá trên 100
+function sumMoney(arr,price){
+  const result=[];
+  let text=0;
+  if(Array.isArray(arr)){
+    arr.forEach(item=>{
+      if(item.price > price){
+        result.push(item);
+      }
+    });
+    result.forEach(item=>{
+      text+=item.price/1;
+    });
+    text+='$';
+  }
+  return result.length>0? text: 'No product has price less than '+price +'.';
+}
+
+//sắp xếp sản phẩm theo giá, theo tên (tăng dần, giảm dần)
+function sortProcduct(arr,direction,prop){
+  const result=[...arr]
+  let text='';
+  if(Array.isArray(arr)){
+    result.sort((a,b)=>{
+      direction= direction=== 'asc'? a[prop]-b[prop] : b[prop]-a[prop];
+      if(isNaN(direction)){
+        if(a[prop]>b[prop] ) direction=1;
+        else if(a[prop]<b[prop] ) direction=-1;
+        else direction=0;
+      }
+      return direction;
+    });
+    result.forEach(item=>{
+      for( let [key,value] of Object.entries(item)){
+        text+=key+ ':'+ value+ '\n';
+      }
+      text+='\n ---------------\n';
+    });
+  }
+  return result.length>0? text: 'Something went wrong!';
+}
+
+listAllCategory(list);
+searchProductByCategory(list,'giao duc');
+searchProductLessThan(list,100);
+sumMoney(list,90);
+sortProcduct(list,'des','title');
+const result=document.getElementById('demo')  
+result.innerText= sortProcduct(list,'desc','title');
 
 
 
